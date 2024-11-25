@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Picture</title>
+    <link rel="stylesheet" href="../CSS/takePic.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.14.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection@0.0.4/dist/face-landmarks-detection.min.js"></script>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='student_admin.html'">Back to Register</button>
+    <div class="container">
+        <h1>Take Picture</h1>
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+        <div>
+            <button id="captureBtn" class="btn">Capture</button>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('captureBtn');
+        const ctx = canvas.getContext('2d');
+
+        async function setupCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: "environment" 
+                } 
+            });
+            video.srcObject = stream;
+        }
+
+        captureBtn.addEventListener('click', async () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.scale(-1, 1); // Invert the canvas horizontally
+            ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+            ctx.scale(-1, 1); // Reset the canvas scale
+
+            const fullName = localStorage.getItem('fullName') || 'unknown';
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+
+            // Load the Face Landmarks Detection model
+            const model = await faceLandmarksDetection.load(faceLandmarksDetection.SupportedPackages.mediapipeFacemesh);
+
+            // Convert the canvas to a tensor
+            const tensor = tf.browser.fromPixels(canvas);
+
+            // Detect face landmarks
+            const predictions = await model.estimateFaces(tensor);
+
+            // If a face is detected, draw landmarks on the canvas
+            if (predictions.length > 0) {
+                predictions.forEach(prediction => {
+                    prediction.landmarks.forEach(landmark => {
+                        ctx.beginPath();
+                        ctx.arc(landmark[0], landmark[1], 2, 0, 2 * Math.PI);
+                        ctx.fillStyle = 'red';
+                        ctx.fill();
+                    });
+                });
+            }
+
+            // Save the image with landmarks to Firebase Storage
+            const storageRef = firebase.storage().ref();
+            const fileRef = storageRef.child(`images/${fullName}_captured_image.jpg`);
+            await fileRef.put(blob);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Picture Captured!',
+                text: 'Your picture has been successfully captured and saved with face landmarks.',
+                confirmButtonText: 'OK'
+            });
+        });
+
+        setupCamera();
+
+        // Retrieve full name from localStorage when the page loads
+        window.addEventListener('load', () => {
+            const fullName = localStorage.getItem('fullName');
+            if (fullName) {
+                console.log(`Full name retrieved: ${fullName}`);
+            } else {
+                console.log('Full name not found in localStorage');
+            }
+        });
+    </script>
+</body>
+</html>

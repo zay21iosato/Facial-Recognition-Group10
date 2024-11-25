@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Section Dashboard</title>
+    <link rel="stylesheet" href="../css/sections.css">
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='Dashboard.html'">Back to Dashboard</button>
+    <div class="container">
+        <h1>Section Dashboard</h1>
+        <a href="viewAllSection.html" class="all-sections-btn">View All Sections</a>
+        <div class="section-list">
+            <div class="section-item">
+                <h2>12-Resilience</h2>
+                <p>Strand: TVL-ICT COMPROG</p>
+                <p>Adviser: Conrad Jr. P. Francisco</p>
+                <button class="btn" onclick="downloadExcel('A')">Download Student List</button>
+            </div>
+            <div class="section-item">
+                <h2>12-Optimism</h2>
+                <p>Strand: TVL-ICT CSS/ANIMATION</p>
+                <p>Adviser: Lloyd C. Velasco</p>
+                <button class="btn" onclick="downloadExcel('B')">Download Student List</button>
+            </div>
+            <div class="section-item">
+                <h2>11 - Serenity</h2>
+                <p>Strand: TVL-ICT CSS/COMPROG</p>
+                <p>Adviser: Niel Jean Faunillan</p>
+                <button class="btn" onclick="downloadExcel('C')">Download Student List</button>
+            </div>
+            <div class="section-item">
+                <h2>11 - Diversity</h2>
+                <p>Strand: TVL-ICT CSS/COMPROG</p>
+                <p>Adviser: Jhune Marlou Polangcos</p>
+                <button class="btn" onclick="downloadExcel('D')">Download Student List</button>
+            </div>
+            <div class="section-item">
+                <h2>Section E</h2>
+                <p>Strand: -------------</p>
+                <p>Adviser: -------------</p>
+                <button class="btn" onclick="downloadExcel('E')">Download Student List</button>
+            </div>
+            <div class="section-item">
+                <h2>Section F</h2>
+                <p>Strand: -------------</p>
+                <p>Adviser: -------------</p>
+                <button class="btn" onclick="downloadExcel('F')">Download Student List</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadExcel(section) {
+            // Assuming there's a function to handle the download logic
+            // This is a placeholder for the actual download logic
+            alert(`Downloading student list for Section ${section}...`);
+        }
+    </script>
+</body>
+</html>

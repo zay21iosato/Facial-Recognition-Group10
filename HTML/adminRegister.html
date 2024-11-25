@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Registration</title>
+    <link rel="stylesheet" href="../CSS/adminRegister.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+         // Import the functions you need from the SDKs you need
+         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAO4guh5BpiR0rc5mS3WH0A1h2zxAPKn1M",
+            authDomain: "event-attendance-5457e.firebaseapp.com",
+            databaseURL: "https://event-attendance-5457e-default-rtdb.firebaseio.com",
+            projectId: "event-attendance-5457e",
+            storageBucket: "event-attendance-5457e.appspot.com",
+            messagingSenderId: "644049506339",
+            appId: "1:644049506339:web:b876160b0648885c7a6196",
+        };
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Get a reference to the database service
+        const database = getDatabase(app);
+
+        // Handle form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("registrationForm").addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Get form values
+                const fullName = document.getElementById('fullName').value.trim();
+                const adminId = document.getElementById('adminId').value.trim();
+                const birthDate = document.getElementById('birthDate').value;
+                const currentLocation = document.getElementById('currentLocation').value.trim();
+                
+                // Validate form values
+                if (!fullName || !adminId || !birthDate || !currentLocation) {
+                    Swal.fire({
+                        title: 'Validation Error',
+                        text: 'All fields are required.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                
+                // Adjust form values based on user type
+                let adjustedData = {
+                    fullName: fullName,
+                    birthDate: birthDate,
+                    currentLocation: currentLocation,
+                    userType: 'admin',
+                    adminId: adminId
+                };
+                
+                // Check if the admin ID already exists
+                const dbRef = ref(database);
+                get(child(dbRef, `admins/${adminId}`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        // Admin ID already exists
+                        Swal.fire({
+                            title: 'Registration Failed',
+                            text: 'An admin with this ID already exists. Please use a different ID.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        
+                        set(ref(database, 'admins/' + adminId), adjustedData)
+                            .then(() => {
+                                console.log('New admin registered:', adjustedData);
+                                // Show SweetAlert for successful registration
+                                Swal.fire({
+                                    title: 'Registration Successful!',
+                                    text: 'You have been registered successfully.',
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        // Reset the form
+                                        document.getElementById('registrationForm').reset();
+                                        // Store the full name in localStorage
+                                        localStorage.setItem('fullName', fullName);
+                                        // Redirect to the take_pic.html page
+                                        window.location.href = 'take_pic.html'; // Redirect after successful registration
+                                    }
+                                });
+                            })
+                            .catch((error) => {
+                                console.error("Error writing to database: ", error);
+                                Swal.fire({
+                                    title: 'Registration Failed',
+                                    text: `Error writing to database: ${error.message}`,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            });
+                    }
+                }).catch((error) => {
+                    console.error("Error checking database: ", error);
+                    Swal.fire({
+                        title: 'Registration Failed',
+                        text: `Error checking database: ${error.message}`,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='student_admin.html'">Back</button>
+    
+    <div class="container">
+        <h1>Registration</h1>
+        <form id="registrationForm">
+
+            <div class="form-group">
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="adminId">Admin ID:</label>
+                <input type="text" id="adminId" name="adminId" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="birthDate">Birth Date:</label>
+                <input type="date" id="birthDate" name="birthDate" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="currentLocation">Current Location:</label>
+                <input type="text" id="currentLocation" name="currentLocation" required>
+            </div>
+            
+            <button type="submit" class="btn">Register</button>
+        </form>
+    </div>
+</body>
+</html>

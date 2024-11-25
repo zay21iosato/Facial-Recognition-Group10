@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <link rel="stylesheet" href="../CSS/studentRegister.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAO4guh5BpiR0rc5mS3WH0A1h2zxAPKn1M",
+            authDomain: "event-attendance-5457e.firebaseapp.com",
+            databaseURL: "https://event-attendance-5457e-default-rtdb.firebaseio.com",
+            projectId: "event-attendance-5457e",
+            storageBucket: "event-attendance-5457e.appspot.com",
+            messagingSenderId: "644049506339",
+            appId: "1:644049506339:web:b876160b0648885c7a6196",
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+        function registerStudent() {
+            var fullName = document.getElementById('fullName').value;
+            var section = document.getElementById('section').value;
+            var strand = document.getElementById('strand').value;
+            var studentId = document.getElementById('studentId').value;
+            var birthDate = document.getElementById('birthDate').value;
+            var currentLocation = document.getElementById('currentLocation').value;
+            db.collection("students").add({
+                fullName: fullName,
+                section: section,
+                strand: strand,
+                studentId: studentId,
+                birthDate: birthDate,
+                currentLocation: currentLocation
+            })
+            .then(function() {
+                Swal.fire('Registered', 'Student has been registered successfully', 'success');
+                // Clear form fields after successful registration
+                document.getElementById('fullName').value = '';
+                document.getElementById('section').value = '';
+                document.getElementById('strand').value = '';
+                document.getElementById('studentId').value = '';
+                document.getElementById('birthDate').value = '';
+                document.getElementById('currentLocation').value = '';
+            })
+            .catch(function(error) {
+                console.error("Error adding document: ", error);
+                // Display error message to the user
+                Swal.fire('Error', 'Failed to register student', 'error');
+            });
+        }
+    </script>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='Home.html'">Back</button>
+    <div class="container">
+        <h1>Student Registration</h1>
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="fullName">Full Name:</label>
+                <input type="text" id="fullName" name="fullName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="section">Section:</label>
+                <input type="text" id="section" name="section" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="strand">Strand:</label>
+                <select id="strand" name="strand" required>
+                    <option value="">Select Strand</option>
+                    <option value="STEM">STEM</option>
+                    <option value="Arts & Design" >Arts & Design</option>
+                    <option value="ABM">ABM</option>
+                    <option value="HUMSS">HUMSS</option>
+                    <option value="GAS">GAS</option>
+                    <option value="TVL-ICT">TVL - ICT</option>
+                    <option value="TVL-HE">TVL - HE</option>
+                    <option value="TVL-IA">TVL - Industrial Arts</option>
+                    <option value="TVL - Travel Services">TVL - Travel Services</option>
+                    <option value="TVL - Fashion Design">TVL - Fashion Design</option>
+
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="studentId">Student ID:</label>
+                <input type="text" id="studentId" name="studentId" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="birthDate">Birth Date:</label>
+                <input type="date" id="birthDate" name="birthDate" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="currentLocation">Current Location:</label>
+                <input type="text" id="currentLocation" name="currentLocation" required>
+            </div>
+            
+            <button type="button" class="btn" onclick="registerStudent()">Register</button>
+        </form>
+    </div>
+</body>
+</html>

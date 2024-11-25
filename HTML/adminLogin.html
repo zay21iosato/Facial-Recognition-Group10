@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="../CSS/adminLogin.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAO4guh5BpiR0rc5mS3WH0A1h2zxAPKn1M",
+            authDomain: "event-attendance-5457e.firebaseapp.com",
+            databaseURL: "https://event-attendance-5457e-default-rtdb.firebaseio.com",
+            projectId: "event-attendance-5457e",
+            storageBucket: "event-attendance-5457e.appspot.com",
+            messagingSenderId: "644049506339",
+            appId: "1:644049506339:web:b876160b0648885c7a6196",
+        };
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Get a reference to the database service
+        const database = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.querySelector('input[name="email"]').value.trim();
+                const password = document.querySelector('input[name="password"]').value.trim();
+                const rememberMe = document.querySelector('input[name="rememberMe"]').checked;
+                validateLogin(email, password, rememberMe);
+            });
+        });
+
+        function validateLogin(email, password, rememberMe) {
+            const sanitizedEmail = email.replace('.', '_');
+            const dbRef = ref(database, `admins/${sanitizedEmail}`);
+            get(dbRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    if (data.password === password) {
+                        if (rememberMe) {
+                            localStorage.setItem('adminEmail', email);
+                            localStorage.setItem('adminPassword', password);
+                        }
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        Swal.fire({
+                            title: 'Login Failed',
+                            text: 'Invalid email or password.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        title: 'Login Failed',
+                        text: 'No admin found with this email.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }).catch((error) => {
+                Swal.fire({
+                    title: 'Login Failed',
+                    text: `Error checking database: ${error.message}`,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        }
+    </script>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='Home.html'">Back</button>
+    <div class="login-container">
+        <h2>Admin Login</h2>
+        <form>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="checkbox" name="rememberMe"> Remember me
+            <input type="submit" value="Login">
+        </form>
+    </div>
+</body>
+</html>

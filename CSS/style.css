@@ -1,0 +1,45 @@
+body{
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #000000 0%, #333333 100%);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas{
+    position: absolute;
+    z-index: 1; /* Ensures canvas is behind the video */
+}
+
+.back-btn {
+    background-color: #5e5e5e;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(255,255,255,0.1);
+    margin: 10px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.back-btn:hover {
+    background-color: #ff0000;
+    transform: translateY(-2px);
+}
+
+#facial-recognition-text {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2; /* Ensures the text is on top of the video */
+}

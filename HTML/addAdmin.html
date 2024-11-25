@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Admin</title>
+    <link rel="stylesheet" href="../CSS/addAdmin.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+         // Import the functions you need from the SDKs you need
+         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+         import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAO4guh5BpiR0rc5mS3WH0A1h2zxAPKn1M",
+            authDomain: "event-attendance-5457e.firebaseapp.com",
+            databaseURL: "https://event-attendance-5457e-default-rtdb.firebaseio.com",
+            projectId: "event-attendance-5457e",
+            storageBucket: "event-attendance-5457e.appspot.com",
+            messagingSenderId: "644049506339",
+            appId: "1:644049506339:web:b876160b0648885c7a6196",
+        };
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        // Get a reference to the database service
+        const database = getDatabase(app);
+
+        // Handle form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("registrationForm").addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Get form values
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
+                const confirmPassword = document.getElementById('confirmPassword').value.trim();
+                
+                // Validate form values
+                if (!email || !password || !confirmPassword) {
+                    Swal.fire({
+                        title: 'Validation Error',
+                        text: 'All fields are required.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                
+                // Validate password match
+                if (password !== confirmPassword) {
+                    Swal.fire({
+                        title: 'Validation Error',
+                        text: 'Passwords do not match.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+                
+                // Adjust form values based on user type
+                let adjustedData = {
+                    email: email,
+                    password: password
+                };
+                
+                // Adjust the database path to store admin data under their email
+                set(ref(database, `admins/${email.replace('.', '_')}`), adjustedData)
+                    .then(() => {
+                        Swal.fire({
+                            title: 'Admin Added Successfully!',
+                            text: 'The new admin has been added successfully.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                document.getElementById('registrationForm').reset();
+                                window.location.href = 'adminLogin.html';
+                            }
+                        });
+                    })
+                    .catch((error) => {
+                        Swal.fire({
+                            title: 'Admin Addition Failed',
+                            text: `Error writing to database: ${error.message}`,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='Dashboard.html'">Back</button>
+    
+    <div class="container">
+        <h1>Add Admin</h1>
+        <form id="registrationForm">
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+            
+            <button type="submit" class="btn">Add Admin</button>
+        </form>
+    </div>
+</body>
+</html>

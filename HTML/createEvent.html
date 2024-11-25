@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create School Event</title>
+    <link rel="stylesheet" href="../CSS/createEvent.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer async src="../Javascript/createEvent.js"></script>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='Event.html'">Back</button>
+    <div class="container">
+        <h1>Create School Event</h1>
+        <form id="createEventForm">
+            <input type="text" id="eventName" placeholder="Event Name" required>
+            <input type="date" id="eventDate" required>
+            <input type="time" id="eventTime" required>
+            <input type="text" id="eventLocation" placeholder="Event Location" required>
+            <textarea id="eventDescription" placeholder="Event Description" rows="4" required></textarea>
+            <select id="eventType" required>
+                <option value="">Select Event Type</option>
+                <option value="academic">Academic</option>
+                <option value="sports">Sports</option>
+                <option value="cultural">Cultural</option>
+                <option value="other">Other</option>
+            </select>
+            <button type="submit" class="btn">Create Event</button>
+        </form>
+    </div>
+</body>
+</html>
