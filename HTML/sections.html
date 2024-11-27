@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Section Dashboard</title>
     <link rel="stylesheet" href="../css/sections.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase.js"></script>
 </head>
 <body>
     <button class="back-btn" onclick="location.href='Dashboard.html'">Back to Dashboard</button>
@@ -52,10 +54,43 @@
     </div>
 
     <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAO4guh5BpiR0rc5mS3WH0A1h2zxAPKn1M",
+            authDomain: "event-attendance-5457e.firebaseapp.com",
+            databaseURL: "https://event-attendance-5457e-default-rtdb.firebaseio.com",
+            projectId: "event-attendance-5457e",
+            storageBucket: "event-attendance-5457e.appspot.com",
+            messagingSenderId: "644049506339",
+            appId: "1:644049506339:web:b876160b0648885c7a6196",
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+
         function downloadExcel(section) {
-            // Assuming there's a function to handle the download logic
-            // This is a placeholder for the actual download logic
-            alert(`Downloading student list for Section ${section}...`);
+            db.collection("students").where("section", "==", section)
+                .get()
+                .then(function(querySnapshot) {
+                    var students = [];
+                    querySnapshot.forEach(function(doc) {
+                        students.push(doc.data());
+                    });
+                    // Convert students array to CSV
+                    var csvContent = Object.keys(students[0]).join(",") + "\n" + students.map(row => Object.values(row).join(",")).join("\n");
+                    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    var link = document.createElement("a");
+                    var url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `Section_${section}_Student_List.csv`);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                })
+                .catch(function(error) {
+                    console.error("Error getting documents: ", error);
+                    Swal.fire('Error', 'Failed to download student list', 'error');
+                });
         }
     </script>
 </body>

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Automated Attendance System</title>
     <link rel="stylesheet" href="../CSS/home.css">
-    <script defer async src="../Javascript/EventHomeBtn.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer async src="../Javascript/viewEvents.js"></script>
 </head>
 <body>
     <div class="container">
@@ -14,7 +15,7 @@
         <button class="btn" onclick="location.href='studentRegister.html'">Student Register</button>
         <button class="btn" onclick="location.href='index.html'">Start Attendance</button>
         <button class="btn" onclick="location.href='adminLogin.html'">Admin Login</button>
-        <button class="btn" id="viewEventsBtn">See Event</button>
+        <button class="btn" id="viewEventsBtn" onclick="viewEvents()">See Event</button>
         
         <div class="features">
             <div class="feature">

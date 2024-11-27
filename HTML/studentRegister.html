@@ -26,15 +26,11 @@
             var section = document.getElementById('section').value;
             var strand = document.getElementById('strand').value;
             var studentId = document.getElementById('studentId').value;
-            var birthDate = document.getElementById('birthDate').value;
-            var currentLocation = document.getElementById('currentLocation').value;
             db.collection("students").add({
                 fullName: fullName,
                 section: section,
                 strand: strand,
-                studentId: studentId,
-                birthDate: birthDate,
-                currentLocation: currentLocation
+                studentId: studentId
             })
             .then(function() {
                 Swal.fire('Registered', 'Student has been registered successfully', 'success');
@@ -43,14 +39,30 @@
                 document.getElementById('section').value = '';
                 document.getElementById('strand').value = '';
                 document.getElementById('studentId').value = '';
-                document.getElementById('birthDate').value = '';
-                document.getElementById('currentLocation').value = '';
             })
             .catch(function(error) {
                 console.error("Error adding document: ", error);
                 // Display error message to the user
                 Swal.fire('Error', 'Failed to register student', 'error');
             });
+        }
+        function attachFile() {
+            var fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.onchange = function(e) {
+                var file = e.target.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('fileSelected').innerText = file.name;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            };
+            fileInput.click();
+        }
+        function takePicture() {
+            window.location.href = "takePic.html";
         }
     </script>
 </head>
@@ -92,14 +104,10 @@
                 <input type="text" id="studentId" name="studentId" required>
             </div>
             
-            <div class="form-group">
-                <label for="birthDate">Birth Date:</label>
-                <input type="date" id="birthDate" name="birthDate" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="currentLocation">Current Location:</label>
-                <input type="text" id="currentLocation" name="currentLocation" required>
+            <div class="file-upload">
+                <button type="button" class="btn" onclick="attachFile()">Attach File</button>
+                <button type="button" class="btn" onclick="takePicture()">Take Picture</button>
+                <p id="fileSelected">No file selected</p>
             </div>
             
             <button type="button" class="btn" onclick="registerStudent()">Register</button>
