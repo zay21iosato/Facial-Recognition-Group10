@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Section Attendance</title>
     <link rel="stylesheet" href="../CSS/viewAllSections.css">
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase.js"></script>
 </head>
 <body>
     <button class="back-btn" onclick="location.href='Sections.html'">Back to Sections</button>
@@ -23,32 +24,46 @@
     </div>
 
     <script>
-        // Simulated attendance data (replace with actual data fetching logic)
-        const attendanceData = [
-            { name: "John Doe", date: "2023-05-01", status: "Present" },
-            { name: "Jane Smith", date: "2023-05-01", status: "Absent" },
-            { name: "Mike Johnson", date: "2023-05-01", status: "Present" },
-        ];
+        // Initialize Firebase
+        var firebaseConfig = {
+            apiKey: "AIzaSyAO4guh5BpiR0rc5mS3WH0A1h2zxAPKn1M",
+            authDomain: "event-attendance-5457e.firebaseapp.com",
+            databaseURL: "https://event-attendance-5457e-default-rtdb.firebaseio.com",
+            projectId: "event-attendance-5457e",
+            storageBucket: "event-attendance-5457e.appspot.com",
+            messagingSenderId: "644049506339",
+            appId: "1:644049506339:web:b876160b0648885c7a6196",
+        };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
 
         function loadSection(sectionId) {
             const sectionInfo = document.getElementById('sectionInfo');
             sectionInfo.innerHTML = `<h2>Section ${sectionId}</h2>`;
-            displayAttendance();
+            displayAttendance(sectionId);
         }
 
-        function displayAttendance() {
+        function displayAttendance(sectionId) {
             const attendanceList = document.getElementById('attendanceList');
             attendanceList.innerHTML = '';
-            attendanceData.forEach(record => {
-                const attendanceItem = document.createElement('div');
-                attendanceItem.className = 'attendance-item';
-                attendanceItem.innerHTML = `
-                    <p><strong>${record.name}</strong></p>
-                    <p>Date: ${record.date}</p>
-                    <p>Status: ${record.status}</p>
-                `;
-                attendanceList.appendChild(attendanceItem);
-            });
+            db.collection("attendance").where("section", "==", sectionId)
+                .get()
+                .then(function(querySnapshot) {
+                    querySnapshot.forEach(function(doc) {a
+                        const attendanceItem = document.createElement('div');
+                        attendanceItem.className = 'attendance-item';
+                        attendanceItem.innerHTML = `
+                            <p><strong>${doc.data().name}</strong></p>
+                            <p>Date: ${doc.data().date}</p>
+                            <p>Time In: ${doc.data().timeIn}</p>
+                            <p>Time Out: ${doc.data().timeOut}</p>
+                        `;
+                        attendanceList.appendChild(attendanceItem);
+                    });
+                })
+                .catch(function(error) {
+                    console.error("Error getting documents: ", error);
+                });
         }
 
         window.onload = function() {

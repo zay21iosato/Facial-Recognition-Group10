@@ -14,41 +14,69 @@
             authDomain: "event-attendance-5457e.firebaseapp.com",
             databaseURL: "https://event-attendance-5457e-default-rtdb.firebaseio.com",
             projectId: "event-attendance-5457e",
-            storageBucket: "event-attendance-5457e.appspot.com",
+            storageBucket: "gs://event-attendance-5457e.appspot.com",
             messagingSenderId: "644049506339",
             appId: "1:644049506339:web:b876160b0648885c7a6196",
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         var db = firebase.firestore();
+        var storage = firebase.storage();
         function registerStudent() {
             var fullName = document.getElementById('fullName').value;
             var section = document.getElementById('section').value;
             var strand = document.getElementById('strand').value;
             var studentId = document.getElementById('studentId').value;
-            db.collection("students").add({
-                fullName: fullName,
-                section: section,
-                strand: strand,
-                studentId: studentId
-            })
-            .then(function() {
-                Swal.fire('Registered', 'Student has been registered successfully', 'success');
-                // Clear form fields after successful registration
-                document.getElementById('fullName').value = '';
-                document.getElementById('section').value = '';
-                document.getElementById('strand').value = '';
-                document.getElementById('studentId').value = '';
-            })
-            .catch(function(error) {
-                console.error("Error adding document: ", error);
-                // Display error message to the user
-                Swal.fire('Error', 'Failed to register student', 'error');
+            var file = document.getElementById('fileInput').files[0];
+            var storageRef = storage.ref('student_files/' + file.name);
+            var uploadTask = storageRef.put(file);
+            uploadTask.on('state_changed', function(snapshot){
+                // Observe state change events such as progress, pause, and resume
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+                switch (snapshot.state) {
+                    case firebase.storage.TaskState.PAUSED: // or 'paused'
+                        console.log('Upload is paused');
+                        break;
+                    case firebase.storage.TaskState.RUNNING: // or 'running'
+                        console.log('Upload is running');
+                        break;
+                }
+            }, function(error) {
+                // Handle unsuccessful uploads
+            }, function() {
+                // Handle successful uploads on complete
+                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                    console.log('File available at', downloadURL);
+                    db.collection("students").add({
+                        fullName: fullName,
+                        section: section,
+                        strand: strand,
+                        studentId: studentId,
+                        fileUrl: downloadURL
+                    })
+                    .then(function() {
+                        Swal.fire('Registered', 'Student has been registered successfully', 'success');
+                        // Clear form fields after successful registration
+                        document.getElementById('fullName').value = '';
+                        document.getElementById('section').value = '';
+                        document.getElementById('strand').value = '';
+                        document.getElementById('studentId').value = '';
+                        document.getElementById('fileInput').value = '';
+                    })
+                    .catch(function(error) {
+                        console.error("Error adding document: ", error);
+                        // Display error message to the user
+                        Swal.fire('Error', 'Failed to register student', 'error');
+                    });
+                });
             });
         }
         function attachFile() {
             var fileInput = document.createElement('input');
             fileInput.type = 'file';
+            fileInput.id = 'fileInput';
             fileInput.onchange = function(e) {
                 var file = e.target.files[0];
                 if (file) {
